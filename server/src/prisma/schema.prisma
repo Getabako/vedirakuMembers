@@ -14,7 +14,7 @@ model User {
   lineUserId   String         @unique @map("line_user_id")
   displayName  String         @map("display_name")
   pictureUrl   String?        @map("picture_url")
-  memberNumber String         @unique @map("member_number")
+  memberNumber String         @unique @default(cuid()) @map("member_number")
   rank         String         @default("BRONZE")
   points       Int            @default(0)
   createdAt    DateTime       @default(now()) @map("created_at")
@@ -30,8 +30,8 @@ model Booking {
   id        String   @id @default(cuid())
   userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date      DateTime
-  timeSlot  String   @map("time_slot")
+  date      DateTime @default(now())
+  timeSlot  String   @default("10:00") @map("time_slot")
   title     String   @default("オンライン個別指導")
   duration  Int      @default(60)
   status    String   @default("CONFIRMED")
@@ -58,8 +58,8 @@ model PointHistory {
 
 model TimeSlot {
   id        String   @id @default(cuid())
-  date      DateTime
-  time      String
+  date      DateTime @default(now())
+  time      String   @default("00:00")
   capacity  Int      @default(1)
   booked    Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
