@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
+import { HiArrowPath } from 'react-icons/hi2';
 import { Header } from '../../components/common/Header';
 import { Card } from '../../components/common/Card';
 import { Loading } from '../../components/common/Loading';
@@ -7,17 +8,39 @@ import { PointHistoryItem } from '../../components/member/PointHistoryItem';
 import { useUserStore } from '../../stores/userStore';
 
 export const PointHistoryPage: React.FC = () => {
-  const { user, pointHistory, isLoading, fetchUser, fetchPointHistory } = useUserStore();
+  const { user, pointHistory, isLoading, error, fetchUser, fetchPointHistory } = useUserStore();
+
+  const loadData = useCallback(() => {
+    fetchUser();
+    fetchPointHistory();
+  }, [fetchUser, fetchPointHistory]);
 
   useEffect(() => {
-    if (!user) {
-      fetchUser();
-    }
-    fetchPointHistory();
-  }, [user, fetchUser, fetchPointHistory]);
+    loadData();
+  }, [loadData]);
 
-  if (isLoading || !user) {
+  if (isLoading) {
     return <Loading fullScreen />;
+  }
+
+  if (error || !user) {
+    return (
+      <div className="min-h-screen bg-line-light">
+        <Header title="ポイント履歴" showBack />
+        <div className="flex flex-col items-center justify-center p-4 pt-20">
+          <p className="text-gray-600 mb-4">
+            {error || 'データの取得に失敗しました'}
+          </p>
+          <button
+            onClick={loadData}
+            className="flex items-center gap-2 px-6 py-3 bg-line-green text-white rounded-lg font-medium"
+          >
+            <HiArrowPath className="w-5 h-5" />
+            再読み込み
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

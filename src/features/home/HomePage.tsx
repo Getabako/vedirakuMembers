@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HiClipboardDocumentList, HiCalendarDays, HiListBullet } from 'react-icons/hi2';
+import { HiClipboardDocumentList, HiCalendarDays, HiListBullet, HiArrowPath } from 'react-icons/hi2';
 import { Header } from '../../components/common/Header';
 import { Card } from '../../components/common/Card';
 import { Loading } from '../../components/common/Loading';
@@ -9,18 +9,37 @@ import { useUserStore } from '../../stores/userStore';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isLoading, fetchUser } = useUserStore();
+  const { user, isLoading, error, fetchUser } = useUserStore();
 
-  useEffect(() => {
+  const loadUser = useCallback(() => {
     fetchUser();
   }, [fetchUser]);
+
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
 
   if (isLoading) {
     return <Loading fullScreen text="読み込み中..." />;
   }
 
-  if (!user) {
-    return <Loading fullScreen text="ユーザー情報を取得中..." />;
+  if (error || !user) {
+    return (
+      <div className="min-h-screen bg-line-light flex flex-col items-center justify-center p-4">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">
+            {error || 'ユーザー情報の取得に失敗しました'}
+          </p>
+          <button
+            onClick={loadUser}
+            className="flex items-center gap-2 mx-auto px-6 py-3 bg-line-green text-white rounded-lg font-medium"
+          >
+            <HiArrowPath className="w-5 h-5" />
+            再読み込み
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
