@@ -107,6 +107,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             courses: [],
           },
         });
+      } else {
+        // 既存ユーザーの場合、LINEプロファイルでdisplayNameとpictureUrlを更新
+        if (profile.displayName && (user.displayName !== profile.displayName || user.pictureUrl !== profile.pictureUrl)) {
+          user = await prisma.user.update({
+            where: { lineUserId },
+            data: {
+              displayName: profile.displayName,
+              pictureUrl: profile.pictureUrl,
+            },
+          });
+        }
       }
 
       return res.status(200).json(user);
