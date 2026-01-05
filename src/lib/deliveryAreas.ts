@@ -3,6 +3,7 @@ export const COURSES = [
   { id: 'vegiraku', name: 'ベジ楽コース', description: '新鮮野菜の定期便' },
   { id: 'komeraku', name: 'コメ楽コース', description: '美味しいお米の定期便' },
   { id: 'tamagoraku', name: 'タマゴ楽コース', description: '新鮮たまごの定期便' },
+  { id: 'ajiraku', name: 'アジ楽コース', description: '新鮮な魚の定期便' },
 ] as const;
 
 export type CourseId = typeof COURSES[number]['id'];

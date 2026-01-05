@@ -1,5 +1,6 @@
 import { QRCodeSVG } from 'qrcode.react';
-import { HiCalendarDays, HiMapPin, HiShoppingBag } from 'react-icons/hi2';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLeaf, faUser, faShoppingBasket, faMapMarkerAlt, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 import { Card } from '../common/Card';
 import type { User } from '../../lib/api';
 import { COURSES, getDeliveryDayByArea, getDayFullName } from '../../lib/deliveryAreas';
@@ -19,18 +20,18 @@ export const MemberCard: React.FC<MemberCardProps> = ({ user, onEditClick }) => 
 
   return (
     <div className="flex flex-col items-center gap-4">
-      {/* ベジラク便会員証メインカード */}
+      {/* ベジ楽便会員証メインカード */}
       <Card variant="elevated" className="w-full bg-gradient-to-br from-green-600 to-green-700 text-white p-0 overflow-hidden">
         {/* ヘッダー */}
         <div className="px-5 pt-5 pb-3">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-green-200 text-xs font-medium">MEMBERSHIP CARD</p>
-              <h1 className="text-xl font-bold tracking-wide">ベジラク便</h1>
+              <h1 className="text-xl font-bold tracking-wide">ベジ楽便</h1>
             </div>
             <div className="text-right">
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <span className="text-2xl">🥬</span>
+                <FontAwesomeIcon icon={faLeaf} className="text-xl" />
               </div>
             </div>
           </div>
@@ -47,7 +48,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({ user, onEditClick }) => 
               />
             ) : (
               <div className="w-14 h-14 rounded-full bg-white/30 flex items-center justify-center border-2 border-white/50">
-                <span className="text-2xl">👤</span>
+                <FontAwesomeIcon icon={faUser} className="text-xl" />
               </div>
             )}
             <div className="flex-1">
@@ -94,7 +95,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({ user, onEditClick }) => 
           {/* コース */}
           <div className="flex items-start gap-3 pb-4 border-b border-gray-100">
             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-              <HiShoppingBag className="w-5 h-5 text-green-600" />
+              <FontAwesomeIcon icon={faShoppingBasket} className="text-green-600" />
             </div>
             <div className="flex-1">
               <p className="text-xs text-gray-500 mb-1">登録コース</p>
@@ -112,7 +113,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({ user, onEditClick }) => 
           <div className="flex items-center gap-3 pt-4">
             <div className="flex-1 flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <HiMapPin className="w-5 h-5 text-blue-600" />
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="text-blue-600" />
               </div>
               <div>
                 <p className="text-xs text-gray-500">お届け地域</p>
@@ -121,7 +122,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({ user, onEditClick }) => 
             </div>
             <div className="flex-1 flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
-                <HiCalendarDays className="w-5 h-5 text-orange-600" />
+                <FontAwesomeIcon icon={faCalendarAlt} className="text-orange-600" />
               </div>
               <div>
                 <p className="text-xs text-gray-500">お届け日</p>

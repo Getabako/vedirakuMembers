@@ -47,7 +47,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
-      <Header title="ベジラク便" />
+      <Header title="ベジ楽便" />
 
       <main className="p-4 pb-8">
         {/* 会員証 */}
