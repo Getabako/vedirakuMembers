@@ -4,12 +4,26 @@ import axios from 'axios';
 
 const prisma = new PrismaClient();
 
-// 会員番号を生成
-const generateMemberNumber = (): string => {
-  const prefix = '0001';
-  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  const suffix = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  return `${prefix}-${random}-${suffix}`;
+// 会員番号を生成（10桁連番）
+const generateMemberNumber = async (): Promise<string> => {
+  // 最新の会員番号を取得
+  const lastUser = await prisma.user.findFirst({
+    where: {
+      memberNumber: { not: null }
+    },
+    orderBy: { memberNumber: 'desc' },
+    select: { memberNumber: true },
+  });
+
+  let nextNumber = 1;
+  if (lastUser?.memberNumber) {
+    const lastNumber = parseInt(lastUser.memberNumber, 10);
+    if (!isNaN(lastNumber)) {
+      nextNumber = lastNumber + 1;
+    }
+  }
+
+  return nextNumber.toString().padStart(10, '0');
 };
 
 // LIFF認証
@@ -82,12 +96,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (!user) {
         // 新規ユーザーの場合は自動登録
+        const memberNumber = await generateMemberNumber();
         user = await prisma.user.create({
           data: {
             lineUserId,
             displayName: profile.displayName || 'ユーザー',
             pictureUrl: profile.pictureUrl,
-            memberNumber: generateMemberNumber(),
+            memberNumber,
             points: 0,
             courses: [],
           },

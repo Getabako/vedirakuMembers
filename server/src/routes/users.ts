@@ -1,10 +1,28 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { verifyLiffToken } from '../middleware/liffAuth.js';
-import { generateMemberNumber } from '../services/memberService.js';
 
 const router = Router();
 const prisma = new PrismaClient();
+
+// 会員番号を生成（10桁連番）
+const generateMemberNumber = async (): Promise<string> => {
+  const lastUser = await prisma.user.findFirst({
+    where: { memberNumber: { not: null } },
+    orderBy: { memberNumber: 'desc' },
+    select: { memberNumber: true },
+  });
+
+  let nextNumber = 1;
+  if (lastUser?.memberNumber) {
+    const lastNumber = parseInt(lastUser.memberNumber, 10);
+    if (!isNaN(lastNumber)) {
+      nextNumber = lastNumber + 1;
+    }
+  }
+
+  return nextNumber.toString().padStart(10, '0');
+};
 
 // 自分の会員情報を取得
 router.get('/me', verifyLiffToken, async (req, res, next) => {
@@ -15,16 +33,16 @@ router.get('/me', verifyLiffToken, async (req, res, next) => {
 
     if (!user) {
       // 新規ユーザーの場合は自動登録
+      const memberNumber = await generateMemberNumber();
       user = await prisma.user.create({
         data: {
           lineUserId: req.lineUserId!,
           displayName: 'ユーザー',
-          memberNumber: generateMemberNumber(),
+          memberNumber,
           points: 0,
           courses: [],
         },
       });
-
     }
 
     res.json(user);
