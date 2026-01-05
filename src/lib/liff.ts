@@ -22,6 +22,8 @@ let isInitialized = false;
 let isMockMode = false;
 
 export const initializeLiff = async (): Promise<LiffProfile | null> => {
+  console.log('🚀 LIFF初期化開始', { LIFF_ID, IS_DEV });
+
   // 開発環境でLIFF IDがない場合はモックモード
   if (IS_DEV && !LIFF_ID) {
     console.log('🔧 開発モード: LIFFをモックで動作します');
@@ -41,9 +43,14 @@ export const initializeLiff = async (): Promise<LiffProfile | null> => {
     await liff.init({ liffId: LIFF_ID });
     isInitialized = true;
 
-    if (!liff.isLoggedIn()) {
+    const isLoggedIn = liff.isLoggedIn();
+    const isInClient = liff.isInClient();
+    console.log('✅ LIFF初期化成功', { isLoggedIn, isInClient });
+
+    if (!isLoggedIn) {
       // LIFFクライアント内の場合のみログインリダイレクト
-      if (liff.isInClient()) {
+      if (isInClient) {
+        console.log('🔐 LINEアプリ内でログイン実行');
         liff.login({ redirectUri: window.location.href });
         return null;
       } else {
@@ -54,7 +61,9 @@ export const initializeLiff = async (): Promise<LiffProfile | null> => {
       }
     }
 
-    return getLiffProfile();
+    const profile = await getLiffProfile();
+    console.log('👤 プロファイル取得成功', profile);
+    return profile;
   } catch (error) {
     console.error('LIFF initialization failed:', error);
 
