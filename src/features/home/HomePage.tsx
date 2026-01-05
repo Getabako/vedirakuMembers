@@ -1,17 +1,14 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HiArrowPath } from 'react-icons/hi2';
 import { Header } from '../../components/common/Header';
 import { Loading } from '../../components/common/Loading';
 import { MemberCard } from '../../components/member/MemberCard';
 import { useUserStore } from '../../stores/userStore';
-import { isDevMockMode } from '../../lib/liff';
-import liff from '@line/liff';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoading, error, fetchUser } = useUserStore();
-  const [debugInfo, setDebugInfo] = useState<string>('');
 
   const loadUser = useCallback(() => {
     fetchUser();
@@ -19,18 +16,6 @@ export const HomePage: React.FC = () => {
 
   useEffect(() => {
     loadUser();
-    // デバッグ情報を収集
-    try {
-      const info = {
-        mockMode: isDevMockMode(),
-        isInClient: liff.isInClient(),
-        isLoggedIn: liff.isLoggedIn(),
-        liffId: import.meta.env.VITE_LIFF_ID || 'undefined',
-      };
-      setDebugInfo(JSON.stringify(info, null, 2));
-    } catch (e) {
-      setDebugInfo(`Error: ${e}`);
-    }
   }, [loadUser]);
 
   const handleEditClick = () => {
@@ -67,12 +52,6 @@ export const HomePage: React.FC = () => {
       <main className="p-4 pb-8">
         {/* 会員証 */}
         <MemberCard user={user} onEditClick={handleEditClick} />
-
-        {/* デバッグ情報（後で削除） */}
-        <div className="mt-4 p-3 bg-gray-100 rounded text-xs font-mono">
-          <p className="font-bold mb-1">DEBUG:</p>
-          <pre className="whitespace-pre-wrap">{debugInfo}</pre>
-        </div>
       </main>
     </div>
   );
