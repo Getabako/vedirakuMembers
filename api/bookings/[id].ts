@@ -13,13 +13,13 @@ interface LiffProfile {
 async function verifyLiffToken(req: VercelRequest): Promise<LiffProfile | null> {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    // 認証ヘッダーがない場合はデモユーザーとして続行（PC/スマホブラウザ対応）
-    console.log('No auth header, falling back to demo user');
-    return { userId: 'U_browser_user', displayName: 'ブラウザユーザー' };
+    return null;
   }
+
   const accessToken = authHeader.substring(7);
 
-  if (accessToken === 'mock-access-token-for-development') {
+  // 開発環境のみモックトークンを許可
+  if (process.env.NODE_ENV !== 'production' && accessToken === 'mock-access-token-for-development') {
     return { userId: 'U_dev_user_12345', displayName: '開発ユーザー' };
   }
 
@@ -28,10 +28,8 @@ async function verifyLiffToken(req: VercelRequest): Promise<LiffProfile | null> 
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return response.data;
-  } catch (error) {
-    console.error('LINE API verification failed:', error);
-    // 認証失敗時もフォールバック
-    return { userId: 'U_fallback_user', displayName: 'ユーザー' };
+  } catch {
+    return null;  // 認証失敗時はnullを返す（フォールバックしない）
   }
 }
 
